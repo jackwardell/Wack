@@ -1,0 +1,22 @@
+from setuptools import find_packages
+from setuptools import setup
+
+setup(
+    name="{{ name }}",
+    version="{{ version }}",
+    packages=find_packages(),
+    include_package_data=True,
+    {% if requirements %}
+    install_requires=[
+        {% for requirement in requirements %}
+            {{ requirement }},
+        {% endfor %}
+    ],
+    {% endif %}
+    {% if entry_point %}
+    entry_points='''
+        [console_scripts]
+        {{ entry_point.cli_command }}={{ entry_point.cli_func }}
+    ''',
+    {% endif %}
+)
