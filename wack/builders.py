@@ -1,37 +1,10 @@
-# todo
-# dotenv
-# pre-commit
 import os
 from abc import ABC
 
-import click
 import jinja2
-from contextlib import contextmanager
-import warnings
 
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATES_DIR = THIS_DIR + "/templates"
-
-
-@contextmanager
-def current_dir():
-    pass
-
-
-def get_package():
-    packages = [
-        i
-        for i in os.listdir(".")
-        if os.path.isdir(i) and "__init__.py" in os.listdir("./" + i)
-    ]
-    if len(packages) > 1:
-        raise ValueError("Only one package allowed")
-    else:
-        return packages.pop()
-
-
-def get_project():
-    return os.path.dirname(".")
 
 
 class Entity:
@@ -134,34 +107,5 @@ class PackageBuilt(BuildResource):
         self.resource = self.resource.format(package_name=self.package_name)
 
 
-@click.group()
-def cli():
-    pass
-
-
-@cli.command()
-def init():
-    pass
-
-
-@cli.command()
-@click.argument("what")
-@click.option("--project", required=False)
-@click.option("--force", required=False, default=False, is_flag=True)
-@click.option("--entry-points", nargs=2, required=False, default=("", ""))
-def make(what, project, force, entry_points):
-    if what.lower() == "installable":
-        project_name = project if project else get_project()
-        click.echo("Building setup.py for:" + project_name)
-        command, func = entry_points
-        pip_installable = PipInstallable(project_name, cli_command=command, cli_func=func)
-        done = pip_installable.do(force=force)
-        if done:
-            click.echo("Built setup.py file")
-        else:
-            click.echo("setup.py file already exists, use --force to overwrite")
-
-
-@cli.command()
-def make_installable():
-    pass
+class WackBuilt(BuildResource):
+    resource = "wack.py"
