@@ -1,12 +1,15 @@
+import os
 from abc import ABC
 from abc import ABCMeta
-import os
+
 import pytest
 
-from wardell_style import BuildResource
-from wardell_style import BuildTemplate
-from wardell_style import PipInstallable, PackageBuilt, make
-from click.testing import CliRunner
+from wack import PackageBuilt
+from wack import PipInstallable
+from wack.builders import BuildResource
+from wack.builders import BuildTemplate
+
+file_content = 'from setuptools import find_packages\nfrom setuptools import setup\n\nsetup(\n    name="{project_name}",\n    version="0.1.0",\n    packages=find_packages(),\n    include_package_data=True,\n    \n    \n)'
 
 
 def test_build_resource(tempdir):
@@ -59,10 +62,7 @@ def test_pip_installable(tempdir):
     with open("setup.py") as f:
         file = f.read()
 
-        assert (
-            file
-            == 'from setuptools import find_packages\nfrom setuptools import setup\n\nsetup(\n    name="Hello-World",\n    version="0.1.0",\n    packages=find_packages(),\n    include_package_data=True,\n    \n    \n)'
-        )
+    assert file == file_content.format(project_name=project_name)
 
     assert pip_installable.is_done()
 
@@ -91,10 +91,7 @@ def test_pip_installable(tempdir):
 
     with open("setup.py") as f:
         file = f.read()
-        assert (
-            file
-            == f'from setuptools import find_packages\nfrom setuptools import setup\n\nsetup(\n    name="{new_project_name}",\n    version="0.1.0",\n    packages=find_packages(),\n    include_package_data=True,\n    \n    \n)'
-        )
+    assert file == file_content.format(project_name=new_project_name)
 
 
 def test_build_package(tempdir):
@@ -124,11 +121,3 @@ def test_build_package(tempdir):
 
     assert package_built.undo()
     assert not os.path.exists(package_init)
-
-
-def test_make(tempdir):
-    runner = CliRunner()
-    result = runner.invoke(make, ["HelloW"])
-    assert result.exit_code == 0
-    # assert False
-    # assert result.output == 'Hello Peter!\n'
