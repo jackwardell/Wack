@@ -1,6 +1,8 @@
 import importlib.util
 import os
+import types
 from pathlib import Path
+from IPython import embed
 
 
 def inspect(obj):
@@ -19,41 +21,86 @@ def inspect(obj):
 
 
 class WackFile:
+    """a representation of the wack.py local file"""
+
     name = "wack"
     file = name + ".py"
 
     def __init__(self, filepath):
+        # set full filepath
         self.filepath = self.resolve_filepath(filepath)
 
+        # raise FileNotFound if the file doesn't exist
+        if not os.path.exists(self.filepath):
+            raise FileNotFoundError(f"{self.filepath} does not exist")
+
+        # get module
+        # we only want to load the module once
+        # but theoretically can be loaded again by calling self.import_module
+        self.module = self.import_module()
+        # make sure there is a module
+        assert self.module, f"failed to import {self.filepath}"
+
     @property
-    def dir(self):
+    def dir(self) -> str:
+        """get directory of self.file"""
         return Path(self.filepath).parent.as_posix()
 
-    @property
-    def module(self):
-        spec = importlib.util.spec_from_file_location(self.name, self.file)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        return module
+    def import_module(self) -> types.ModuleType:
+        """import self.file as module"""
+        # try to import the wack module
+        try:
+            # get module spec
+            spec = importlib.util.spec_from_file_location(self.name, self.filepath)
+            # import module
+            module = importlib.util.module_from_spec(spec)
+            # load module
+            spec.loader.exec_module(module)
+            # return module
+            return module
 
-    def resolve_filepath(self, filepath):
+        # import may fail for many reasons
+        except Exception as e:
+            # so display the exception to the user
+            raise ImportError(f"failed to import {self.filepath} due to: {e}")
+
+    def resolve_filepath(self, filepath: str) -> str:
+        """make the absolute filepath for self.file"""
+        # get filepath as string
         filepath = Path(filepath).resolve().as_posix()
+        # then if it ends with self.file
+        # it's ok
         if filepath.endswith(self.file):
             return filepath
+        # else add the file to the end
         else:
             return filepath + "/" + self.file
 
     @classmethod
     def from_current_dir(cls):
-        def iter_search(path):
+        """find cls.file recursively from current dir backwards"""
+
+        def iter_search(file: str, path: str) -> str:
+            """find a file in path"""
+            # resolve for '.' case
             path = Path(path).resolve()
-            if cls.file in os.listdir(path):
+            if file in os.listdir(path):
+                # embed()
+                # return cls.file if found
                 return path.as_posix()
             elif path.as_posix() == "/":
-                raise ValueError(f"No wack.py file found")
+                # break if no file found by root
+                raise FileNotFoundError(f"No wack.py file found")
             else:
-                iter_search(path.parent)
+                # else repeat for the parent dir
+                return iter_search(file, path.parent)
 
+        # get current dir
         current_dir = os.getcwd()
-        wack_py_dir = iter_search(current_dir)
+        # search for cls.file from current dir
+        wack_py_dir = iter_search(cls.file, current_dir)
+        # return a instance of cls
         return cls(wack_py_dir)
+
+    def __eq__(self, other):
+        return type(self) == type(other) and self.filepath == other.filepath
