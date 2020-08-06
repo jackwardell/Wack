@@ -1,7 +1,7 @@
 import os
 import tempfile
 import venv
-
+from pathlib import Path
 import pytest
 from click.testing import CliRunner
 
@@ -12,7 +12,7 @@ def tempdir():
         current_dir = os.path.dirname(os.path.realpath(__file__))
         os.chdir(temp_dir)
         venv.create("venv")
-        yield "/private" + temp_dir
+        yield Path("/private" + temp_dir)
         os.chdir(current_dir)
 
 
