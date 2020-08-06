@@ -4,6 +4,8 @@ from wack.builders import PackageBuilt
 from wack.builders import PipInstallable, WackBuilt
 from wack.importing import add_wack_to_cli
 from wack.importing import get_package
+import subprocess
+import sys
 
 
 @click.group()
@@ -25,6 +27,12 @@ def init(force):
     else:
         click.echo("wack.py file already exists, use --force to overwrite")
         return
+
+
+@cli.command()
+@click.argument("package")
+def install(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
 
 @cli.group()
