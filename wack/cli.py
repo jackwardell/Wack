@@ -25,11 +25,18 @@ def init(force):
     click.echo(message)
 
 
+class NoDistributionFound(Exception):
+    pass
+
+
 @cli.command()
 @click.argument("package")
 def install(package):
     # todo add option to add to requirements.txt
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+    try:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+    except subprocess.CalledProcessError:
+        raise NoDistributionFound(f"No distribution found called: {package}")
 
 
 @cli.group()
@@ -56,15 +63,15 @@ def installable(project, force, entry_points):
 
 
 @make.command()
-@click.argument("package name")
+@click.argument("name")
 @click.option("--force", "-f", required=False, default=False, is_flag=True)
-def package(package_name, force):
-    package_built = PackageBuilt(package_name)
+def package(name, force):
+    package_built = PackageBuilt(name)
     done = package_built.do(force=force)
     message = (
-        f"Built {package_name}/__init__.py file"
+        f"Built {name}/__init__.py file"
         if done
-        else f"{package_name}/__init__.py file already exists, "
+        else f"{name}/__init__.py file already exists, "
         f"use --force to overwrite"
     )
     click.echo(message)
