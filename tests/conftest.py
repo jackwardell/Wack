@@ -6,7 +6,7 @@ import pytest
 from click.testing import CliRunner
 
 
-@pytest.fixture
+@pytest.fixture(scope='function')
 def tempdir() -> Path:
     with tempfile.TemporaryDirectory() as temp_dir:
         current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -17,17 +17,12 @@ def tempdir() -> Path:
         yield path
         os.chdir(current_dir)
 
+
 # @pytest.fixture
-# def tempdir_and_wack(tempdir) -> Path:
-#     path = tempdir /
-#     return
-
-
-@pytest.fixture
-def tempdir_wack(tempdir):
-    with open("wack.py", "w+") as _:
-        pass
-    yield tempdir + "/wack.py"
+# def tempdir_wack(tempdir):
+#     with open("wack.py", "w+") as _:
+#         pass
+#     yield tempdir + "/wack.py"
 
 
 @pytest.fixture

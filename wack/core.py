@@ -27,6 +27,7 @@ class CLI(click.Group):
         self.add_commands()
 
     def add_commands(self):
+        """add commands from wack.py to cli"""
         wack = import_wack()
         for name, item in vars(wack).items():
             if isinstance(item, WackCommand):

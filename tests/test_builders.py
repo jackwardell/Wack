@@ -51,13 +51,13 @@ def test_pip_installable(tempdir):
     assert not pip_installable.is_done()
     assert pip_installable.not_done()
 
-    assert not os.path.exists(tempdir + "/" + pip_installable.resource)
+    assert not os.path.exists(tempdir / pip_installable.resource)
 
     pip_installable.do()
     assert pip_installable.is_done()
     assert not pip_installable.not_done()
 
-    assert os.path.exists(tempdir + "/" + pip_installable.resource)
+    assert os.path.exists(tempdir / pip_installable.resource)
 
     with open("setup.py") as f:
         file = f.read()

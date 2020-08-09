@@ -7,6 +7,7 @@ THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATES_DIR = THIS_DIR + "/templates"
 
 
+# todo refactor this
 class Entity:
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
@@ -107,5 +108,9 @@ class PackageBuilt(BuildResource):
         self.resource = self.resource.format(package_name=self.package_name)
 
 
-class WackBuilt(BuildResource):
+class WackBuilt(BuildTemplate):
     resource = "wack.py"
+
+    def render_template(self):
+        template = jinja2.Template(self.template)
+        return template.render()

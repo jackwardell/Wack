@@ -1,6 +1,10 @@
-from wack.importing import find_file_recursively_backwards, get_wack_py, import_wack
 import os
+
 import pytest
+
+from wack.importing import find_file_recursively_backwards
+from wack.importing import get_wack_py
+from wack.importing import import_wack
 
 
 def make_file(filename, directory):
