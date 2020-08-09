@@ -1,23 +1,74 @@
 import importlib
 import importlib.util
 import os
-from contextlib import contextmanager
 from pathlib import Path
 
-import click
+
+#
+# @contextmanager
+# def operate_in_dir(new_dir):
+#     current_dir = os.getcwd()
+#     try:
+#         os.chdir(new_dir)
+#         yield
+#     except Exception as e:
+#         raise e
+#     finally:
+#         os.chdir(current_dir)
 
 
-@contextmanager
-def operate_in_dir(new_dir):
-    current_dir = os.getcwd()
-    try:
-        os.chdir(new_dir)
-        yield
-    except Exception as e:
-        raise e
-    finally:
-        os.chdir(current_dir)
+def find_file_recursively_backwards(file, directory) -> Path:
+    directory = Path(directory).resolve()
+    if file in os.listdir(directory):
+        return directory / file
+    elif directory.as_posix() == "/":
+        raise FileNotFoundError(f"{file} not found")
+    else:
+        return find_file_recursively_backwards(file, directory.parent)
 
+
+def get_wack_py() -> Path:
+    return find_file_recursively_backwards("wack.py", Path.cwd())
+
+
+def import_wack():
+    wack_py = get_wack_py()
+    spec = importlib.util.spec_from_file_location(wack_py.stem, wack_py)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+# def add_wack_to_cli(cli):
+#     try:
+#         # import IPython; IPython.embed()
+#         wack = import_wack()
+#         commands_and_groups_to_add = {
+#             name: value
+#             for name, value in vars(wack).items()
+#             if isinstance(value, click.core.Command)
+#                and name
+#                not in [
+#                    item
+#                    for sublist in [
+#                     group.commands
+#                     for group in {
+#                         name: value
+#                         for name, value in vars(wack).items()
+#                         if isinstance(value, click.core.Group)
+#                     }.values()
+#                 ]
+#                    for item in sublist
+#                ]
+#         }
+#
+#         for i, j in commands_and_groups_to_add.items():
+#             cli.add_command(j, name=i)
+#
+#     except ImportError:
+#         pass
+#
+#     return cli
 
 # class File:
 #     """a representation of a file, essentially a wrapper around pathlib.Path"""
@@ -64,76 +115,19 @@ def operate_in_dir(new_dir):
 #         return cls(path.resolve().as_posix())
 
 
-# def get_package():
-#     packages = [
-#         i
-#         for i in os.listdir(".")
-#         if os.path.isdir(i) and "__init__.py" in os.listdir("./" + i)
-#     ]
-#     if len(packages) > 1:
-#         raise ValueError("Only one package allowed")
-#     elif len(packages) == 0:
-#         return ""
-#     else:
-#         return packages.pop()
-
-
-def find_file_recursively_backwards(file, directory) -> Path:
-    directory = Path(directory).resolve()
-    print(directory)
-    if file in os.listdir(directory):
-        return directory.with_name(file)
-    elif directory.as_posix() == "/":
-        raise FileNotFoundError(f"{file} not found")
+def get_package():
+    packages = [
+        package
+        for package in os.listdir(".")
+        if os.path.isdir(package) and "__init__.py" in os.listdir("./" + package)
+    ]
+    if len(packages) > 1:
+        # todo allow more packages?
+        raise ValueError("Only one package allowed")
+    elif len(packages) == 0:
+        return ""
     else:
-        return find_file_recursively_backwards(file, directory.parent)
-
-
-def get_wack_py() -> Path:
-    return find_file_recursively_backwards("wack.py", Path.cwd())
-
-
-def import_wack():
-    wack_py = get_wack_py()
-    with operate_in_dir(wack_py.parent.as_posix()):
-        module = importlib.import_module(wack_py.stem)
-
-    # spec = importlib.util.spec_from_file_location("wack", wack_py)
-    # module = importlib.util.module_from_spec(spec)
-    # spec.loader.exec_module(module)
-    return module
-
-
-def add_wack_to_cli(cli):
-    try:
-        # import IPython; IPython.embed()
-        wack = import_wack()
-        commands_and_groups_to_add = {
-            name: value
-            for name, value in vars(wack).items()
-            if isinstance(value, click.core.Command)
-            and name
-            not in [
-                item
-                for sublist in [
-                    group.commands
-                    for group in {
-                        name: value
-                        for name, value in vars(wack).items()
-                        if isinstance(value, click.core.Group)
-                    }.values()
-                ]
-                for item in sublist
-            ]
-        }
-
-        for i, j in commands_and_groups_to_add.items():
-            cli.add_command(j, name=i)
-
-    except ImportError:
-        pass
-
-    return cli
+        return packages.pop()
 
 
 # def as_module(self) -> types.ModuleType:

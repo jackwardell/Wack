@@ -1,19 +1,15 @@
-import click
-
-from wack.builders import PackageBuilt
-from wack.builders import PipInstallable, WackBuilt
-from wack.importing import add_wack_to_cli
-from wack.importing import get_package
 import subprocess
 import sys
 
+import click
 
-@click.group()
-def cli():
-    pass
+from wack.builders import PackageBuilt
+from wack.builders import PipInstallable
+from wack.builders import WackBuilt
+from wack.core import CLI
+from wack.importing import get_package
 
-
-add_wack_to_cli(cli)
+cli = CLI()
 
 
 @cli.command()
@@ -21,12 +17,12 @@ add_wack_to_cli(cli)
 def init(force):
     wack_built = WackBuilt()
     done = wack_built.do(force=force)
-    if done:
-        click.echo("Built wack.py file")
-        return
-    else:
-        click.echo("wack.py file already exists, use --force to overwrite")
-        return
+    message = (
+        "Built wack.py file"
+        if done
+        else "wack.py file already exists, use --force to overwrite"
+    )
+    click.echo(message)
 
 
 @cli.command()
