@@ -28,6 +28,7 @@ def init(force):
 @cli.command()
 @click.argument("package")
 def install(package):
+    # todo add option to add to requirements.txt
     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
 
@@ -46,12 +47,12 @@ def installable(project, force, entry_points):
     command, func = entry_points
     pip_installable = PipInstallable(project_name, cli_command=command, cli_func=func)
     done = pip_installable.do(force=force)
-    if done:
-        click.echo("Built setup.py file")
-        return
-    else:
-        click.echo("setup.py file already exists, use --force to overwrite")
-        return
+    message = (
+        "Built setup.py file"
+        if done
+        else "setup.py file already exists, use --force to overwrite"
+    )
+    click.echo(message)
 
 
 @make.command()
@@ -60,12 +61,10 @@ def installable(project, force, entry_points):
 def package(package_name, force):
     package_built = PackageBuilt(package_name)
     done = package_built.do(force=force)
-    if done:
-        click.echo(f"Built {package_name}/__init__.py file")
-        return
-    else:
-        click.echo(
-            f"{package_name}/__init__.py file already exists, "
-            f"use --force to overwrite"
-        )
-        return
+    message = (
+        f"Built {package_name}/__init__.py file"
+        if done
+        else f"{package_name}/__init__.py file already exists, "
+        f"use --force to overwrite"
+    )
+    click.echo(message)

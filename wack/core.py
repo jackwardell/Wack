@@ -22,13 +22,17 @@ def command(*args, **kwargs):
 
 class CLI(click.Group):
     """custom base cli for $ wack"""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.add_commands()
 
     def add_commands(self):
         """add commands from wack.py to cli"""
-        wack = import_wack()
-        for name, item in vars(wack).items():
-            if isinstance(item, WackCommand):
-                self.add_command(item, name=name)
+        try:
+            wack = import_wack()
+            for name, item in vars(wack).items():
+                if isinstance(item, WackCommand):
+                    self.add_command(item, name=name)
+        except FileNotFoundError:
+            pass
