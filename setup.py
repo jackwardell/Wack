@@ -6,7 +6,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="Wack",
-    version="0.1.1",
+    version="0.1.2",
     author="Jack Wardell",
     packages=find_packages(),
     include_package_data=True,
