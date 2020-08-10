@@ -1,14 +1,12 @@
 # Wack
 
 ## Aim
-Wack is a personal project to provide a simple [click](https://github.com/pallets/click) (maybe [typer](https://github.com/tiangolo/typer) / or custom) cli tool. 
+Wack is a personal project to provide a simple [click](https://github.com/pallets/click) (maybe [typer](https://github.com/tiangolo/typer) / or custom in the future) cli tool. 
 
 Wack gives the user the ability to:
 * Make simple files quickly (e.g. setup.py)
 * Ability to write simple and quick cli commands, found when typing `$ wack` into the terminal
 * To automate simple tasks (e.g. making `pip install` write to requirements.txt by default)
-
-
 
 ## Install:
 ```
@@ -58,9 +56,7 @@ Commands:
   make
 ```
 
-FYI, as of 0.0.1 (current version), click groups aren't supported, only commands, which need to be imported from `wack`. All other click features should work by default.
-
-
+FYI, as of 0.0.1 (current version), click groups aren't supported, only commands, which need to be imported from `wack`. All other click features should work by default and can be imported from click or wack (as wack impliments `from click import *`).
 
 ## TODO
 * have a `make` command for:
