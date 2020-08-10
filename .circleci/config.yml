@@ -8,12 +8,12 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - run: 
+      - run:
           command: |
             pip install -e .
-            pytest
-          name:
-            Test
+            pip install pytest
+            pytest 
+          name: Test
 
 workflows:
   main:
