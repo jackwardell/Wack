@@ -12,7 +12,7 @@ def tempdir() -> Path:
         current_dir = os.path.dirname(os.path.realpath(__file__))
         os.chdir(temp_dir)
         venv.create("venv")
-        path = Path("/private" + temp_dir)
+        path = Path("/private" + temp_dir) if 'private' in os.listdir("/") else Path(temp_dir)
         assert os.getcwd() == path.as_posix()
         yield path
         os.chdir(current_dir)
