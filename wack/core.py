@@ -7,6 +7,9 @@ class WackCommand(click.Command):
     pass
 
 
+echo = click.echo
+
+
 def command(*args, **kwargs):
     """copied from click.decorators.command"""
     from click.decorators import command
