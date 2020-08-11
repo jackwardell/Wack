@@ -1,14 +1,18 @@
 from setuptools import find_packages
 from setuptools import setup
 
+# IN BETA
+VERSION = "0.1.3"
+
 with open("README.md", "r") as f:
     long_description = f.read()
 
 setup(
     name="Wack",
-    version="0.1.2",
+    version=VERSION,
     author="Jack Wardell",
     packages=find_packages(),
+    package_data={'Wack': ['wack/templates/*.jinja2']},
     include_package_data=True,
     description="A simple CLI and automation tool",
     url="https://github.com/jackwardell/Wack",

@@ -1,3 +1,3 @@
 exclude _mothballed.py
 global-exclude test_*.py
-
+recursive-include *.jinja2
