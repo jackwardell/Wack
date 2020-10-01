@@ -7,6 +7,8 @@ THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATES_DIR = THIS_DIR + "/templates"
 
 
+# todo use pathlib
+
 # todo refactor this
 class Entity:
     def __init__(self, **kwargs):
@@ -23,6 +25,14 @@ class BuildResource(ABC):
         raise NotImplementedError()
 
     @property
+    def filename(self):
+        return self.resource
+
+    @property
+    def filename_parts(self):
+        return self.filename.split("/")
+
+    @property
     def resource_parts(self):
         return self.resource.split("/")
 
@@ -32,7 +42,7 @@ class BuildResource(ABC):
 
     def is_done(self):
         path = "."
-        for part in self.resource_parts:
+        for part in self.filename_parts:
             if part not in os.listdir(path):
                 return False
             else:
@@ -45,10 +55,10 @@ class BuildResource(ABC):
 
     def do(self, force=False):
         if self.not_done() or force:
-            dirname = os.path.dirname(self.resource)
+            dirname = os.path.dirname(self.filename)
             if dirname and not os.path.exists(dirname):
                 os.makedirs(dirname)
-            with open(self.resource, "w+") as f:
+            with open(self.filename, "w+") as f:
                 f.write(self.content)
             return True
         else:
@@ -56,7 +66,7 @@ class BuildResource(ABC):
 
     def undo(self):
         if self.is_done():
-            os.remove(self.resource)
+            os.remove(self.filename)
             return True
         else:
             return False
@@ -119,7 +129,8 @@ class WackBuilt(BuildTemplate):
 
 
 class PreCommitConfigBuilt(BuildTemplate):
-    resource = ".pre-commit-config.yaml"
+    resource = "pre-commit-config.yaml"
+    filename = ".pre-commit-config.yaml"
 
     def render_template(self):
         template = jinja2.Template(self.template)
@@ -127,7 +138,8 @@ class PreCommitConfigBuilt(BuildTemplate):
 
 
 class TravisPyPiYAMLBuilt(BuildTemplate):
-    resource = ".travis.yml"
+    resource = "travis.yml"
+    filename = ".travis.yml"
 
     def render_template(self):
         template = jinja2.Template(self.template)
