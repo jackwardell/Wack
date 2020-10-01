@@ -2,9 +2,10 @@ import subprocess
 import sys
 
 import click
-
 from wack.builders import PackageBuilt
 from wack.builders import PipInstallable
+from wack.builders import PreCommitConfigBuilt
+from wack.builders import TravisPyPiYAMLBuilt
 from wack.builders import WackBuilt
 from wack.core import CLI
 from wack.importing import get_package
@@ -34,7 +35,9 @@ class NoDistributionFound(Exception):
 def install(package):
     # todo add option to add to requirements.txt
     try:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+        subprocess.check_call(
+            [sys.executable, "-m", "pip", "install", package]
+        )
     except subprocess.CalledProcessError:
         raise NoDistributionFound(f"No distribution found called: {package}")
 
@@ -52,7 +55,9 @@ def installable(project, force, entry_points):
     project_name = project if project else get_package()
     click.echo("Building setup.py for: " + project_name)
     command, func = entry_points
-    pip_installable = PipInstallable(project_name, cli_command=command, cli_func=func)
+    pip_installable = PipInstallable(
+        project_name, cli_command=command, cli_func=func
+    )
     done = pip_installable.do(force=force)
     message = (
         "Built setup.py file"
@@ -69,9 +74,36 @@ def package(name, force):
     package_built = PackageBuilt(name)
     done = package_built.do(force=force)
     message = (
-        f"Built {name}/__init__.py file"
+        "Built {name}/__init__.py file"
         if done
         else f"{name}/__init__.py file already exists, "
-        f"use --force to overwrite"
+        "use --force to overwrite"
+    )
+    click.echo(message)
+
+
+@make.command()
+@click.option("--force", "-f", required=False, default=False, is_flag=True)
+def pre_commit(force):
+    package_built = PreCommitConfigBuilt()
+    done = package_built.do(force=force)
+    message = (
+        "Built .pre-commit-config.yaml file"
+        if done
+        else ".pre-commit-config.yaml file already exists, "
+        "use --force to overwrite"
+    )
+    click.echo(message)
+
+
+@make.command()
+@click.option("--force", "-f", required=False, default=False, is_flag=True)
+def travis(force):
+    package_built = TravisPyPiYAMLBuilt()
+    done = package_built.do(force=force)
+    message = (
+        "Built .travis.yaml file"
+        if done
+        else ".travis.yaml file already exists, use --force to overwrite"
     )
     click.echo(message)

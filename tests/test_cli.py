@@ -1,10 +1,10 @@
 import os
 
-# import click
-import pytest
 from wack.cli import cli
 from wack.cli import make
-from wack.importing import PackageNotFoundError, TooManyPackagesFound
+from wack.importing import PackageNotFoundError
+
+# import click
 
 file_content = 'from setuptools import find_packages\nfrom setuptools import setup\n\nsetup(\n    name="{project_name}",\n    version="0.1.0",\n    packages=find_packages(),\n    include_package_data=True,\n    \n    \n)'
 
@@ -43,7 +43,10 @@ def test_make_installable_works(tempdir, runner):
 
     result = runner.invoke(make, ["installable"])
     assert result.exit_code == 0
-    assert result.output == f"Building setup.py for: {pkg.stem}\nBuilt setup.py file\n"
+    assert (
+        result.output
+        == f"Building setup.py for: {pkg.stem}\nBuilt setup.py file\n"
+    )
     with open("setup.py") as f:
         file = f.read()
     assert os.path.exists("setup.py")
@@ -72,15 +75,17 @@ def test_make_installable_with_args(tempdir, runner):
     assert result.exit_code == 0
     # check text output is correct
     assert (
-            result.output == f"Building setup.py for: {project_name}\nBuilt setup.py file\n"
+        result.output
+        == f"Building setup.py for: {project_name}\nBuilt setup.py file\n"
     )
     result = runner.invoke(make, ["installable", project_name])
     assert (
-            result.output
-            == f"Building setup.py for: {project_name}\nsetup.py file already exists, use --force to overwrite\n"
+        result.output
+        == f"Building setup.py for: {project_name}\nsetup.py file already exists, use --force to overwrite\n"
     )
     result = runner.invoke(make, ["installable", project_name, "--force"])
     assert (
-            result.output == f"Building setup.py for: {project_name}\nBuilt setup.py file\n"
+        result.output
+        == f"Building setup.py for: {project_name}\nBuilt setup.py file\n"
     )
     # entry points

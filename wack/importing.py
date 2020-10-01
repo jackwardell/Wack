@@ -1,4 +1,3 @@
-import importlib
 import importlib.util
 import os
 from pathlib import Path
@@ -38,7 +37,8 @@ def get_package():
     packages = [
         package
         for package in os.listdir(".")
-        if os.path.isdir(package) and "__init__.py" in os.listdir("./" + package)
+        if os.path.isdir(package)
+        and "__init__.py" in os.listdir("./" + package)
     ]
     if len(packages) > 1:
         # todo allow more packages?

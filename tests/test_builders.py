@@ -3,7 +3,6 @@ from abc import ABC
 from abc import ABCMeta
 
 import pytest
-
 from wack import PackageBuilt
 from wack import PipInstallable
 from wack.builders import BuildResource

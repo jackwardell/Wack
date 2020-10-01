@@ -1,7 +1,7 @@
 # Wack
 
 ## Aim
-Wack is a personal project to provide a simple [click](https://github.com/pallets/click) (maybe [typer](https://github.com/tiangolo/typer) / or custom in the future) cli tool. 
+Wack is a personal project to provide a simple [click](https://github.com/pallets/click) (maybe [typer](https://github.com/tiangolo/typer) / or custom in the future) cli tool.
 
 Wack gives the user the ability to:
 * Make simple files quickly (e.g. setup.py)

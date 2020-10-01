@@ -1,7 +1,6 @@
 import os
 
 import pytest
-
 from wack.importing import find_file_recursively_backwards
 from wack.importing import get_wack_py
 from wack.importing import import_wack
@@ -41,7 +40,7 @@ def test_find_file_recursively_no_file(tempdir):
 
 
 def test_find_file_recursively_same_dir(tempdir):
-    filename = 'hello.world'
+    filename = "hello.world"
     file_to_find = make_file(filename, tempdir)
     file_found = find_file_recursively_backwards(filename, tempdir)
     assert str(file_found) == str(file_to_find)
@@ -49,7 +48,7 @@ def test_find_file_recursively_same_dir(tempdir):
 
 def test_find_file_recursively_backwards_once(tempdir):
     # make file
-    filename = 'hello.world'
+    filename = "hello.world"
     file_to_find = make_file(filename, tempdir)
 
     # make dir
@@ -61,7 +60,7 @@ def test_find_file_recursively_backwards_once(tempdir):
 
 def test_find_file_recursively_backwards_10_times(tempdir):
     # make file
-    filename = 'hello.world'
+    filename = "hello.world"
     file_to_find = make_file(filename, tempdir)
 
     # make dirs
@@ -78,12 +77,12 @@ def test_get_wack_py_no_file(tempdir):
 
 
 def test_get_wack_py_same_file(tempdir):
-    wack_py = make_file('wack.py', tempdir)
+    wack_py = make_file("wack.py", tempdir)
     assert str(get_wack_py()) == str(wack_py)
 
 
 def test_get_wack_py_backwards_once(tempdir):
-    filename = 'wack.py'
+    filename = "wack.py"
     wack_py = make_file(filename, tempdir)
     # make dir
     make_dir("some-directory", tempdir)
@@ -91,7 +90,7 @@ def test_get_wack_py_backwards_once(tempdir):
 
 
 def test_get_wack_py_backwards_10_times(tempdir):
-    filename = 'wack.py'
+    filename = "wack.py"
     wack_py = make_file(filename, tempdir)
     # make dirs
     make_dirs([f"dir-{i}" for i in range(10)], tempdir)
@@ -99,9 +98,9 @@ def test_get_wack_py_backwards_10_times(tempdir):
 
 
 def test_import_wack_py(tempdir):
-    wack_py = make_file('wack.py', tempdir)
+    wack_py = make_file("wack.py", tempdir)
     with open(wack_py, "w") as f:
         f.write("a = 1")
 
     wack = import_wack()
-    assert getattr(wack, "a") == 1
+    assert wack.a == 1

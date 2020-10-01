@@ -83,7 +83,9 @@ class BuildTemplate(BuildResource, ABC):
 class PipInstallable(BuildTemplate):
     resource = "setup.py"
 
-    def __init__(self, project_name, version="0.1.0", cli_command="", cli_func=""):
+    def __init__(
+        self, project_name, version="0.1.0", cli_command="", cli_func=""
+    ):
         self.project_name = project_name
         self.version = version
         self.requirements = []
@@ -110,6 +112,22 @@ class PackageBuilt(BuildResource):
 
 class WackBuilt(BuildTemplate):
     resource = "wack.py"
+
+    def render_template(self):
+        template = jinja2.Template(self.template)
+        return template.render()
+
+
+class PreCommitConfigBuilt(BuildTemplate):
+    resource = ".pre-commit-config.yaml"
+
+    def render_template(self):
+        template = jinja2.Template(self.template)
+        return template.render()
+
+
+class TravisPyPiYAMLBuilt(BuildTemplate):
+    resource = ".travis.yml"
 
     def render_template(self):
         template = jinja2.Template(self.template)

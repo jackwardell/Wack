@@ -1,5 +1,4 @@
 import click
-
 from wack.importing import import_wack
 
 
