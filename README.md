@@ -56,7 +56,14 @@ Commands:
   make
 ```
 
-FYI, as of 0.0.1 (current version), click groups aren't supported, only commands, which need to be imported from `wack`. All other click features should work by default and can be imported from click or wack (as wack impliments `from click import *`).
+
+Make features:
+* .pre-commit-config.yaml
+* .travis.yml (for pypi)
+* setup.py
+* wack.py
+
+FYI, as of 0.1.4 (current version), click groups aren't supported, only commands, which need to be imported from `wack`. All other click features should work by default and can be imported from click or wack (as wack impliments `from click import *`).
 
 ## TODO
 * have a `make` command for:
