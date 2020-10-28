@@ -34,9 +34,7 @@ class Application:
     def install_packages(self):
         for package in DESIRED_PACKAGES:
             try:
-                subprocess.check_call(
-                    [sys.executable, "-m", "pip", "install", package]
-                )
+                subprocess.check_call([sys.executable, "-m", "pip", "install", package])
             except subprocess.CalledProcessError as e:
                 raise CommandFailure(e)
 
