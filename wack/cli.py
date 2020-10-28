@@ -1,45 +1,26 @@
-import subprocess
-import sys
-
 import click
-from wack.builders import PackageBuilt
-from wack.builders import PipInstallable
-from wack.builders import PreCommitConfigBuilt
-from wack.builders import TravisPyPiYAMLBuilt
-from wack.builders import WackBuilt
-from wack.core import CLI
-from wack.importing import get_package
 
-cli = CLI()
+from .app import Application
 
-
-@cli.command()
-@click.option("--force", "-f", required=False, default=False, is_flag=True)
-def init(force):
-    wack_built = WackBuilt()
-    done = wack_built.do(force=force)
-    message = (
-        "Built wack.py file"
-        if done
-        else "wack.py file already exists, use --force to overwrite"
-    )
-    click.echo(message)
+SETUP_PY = "setup.py"
+PRE_COMMIT = ".pre-commit-config.yaml"
+LICENSE = "LICENSE"
+TRAVIS = ".travis.yml"
+GITIGNORE = ".gitignore"
 
 
-class NoDistributionFound(Exception):
-    pass
+@click.group()
+@click.pass_context
+def cli(context):
+    context.ensure_object(type("context", (), {}))
+    context.obj.app = Application()
 
 
 @cli.command()
-@click.argument("package")
-def install(package):
-    # todo add option to add to requirements.txt
-    try:
-        subprocess.check_call(
-            [sys.executable, "-m", "pip", "install", package]
-        )
-    except subprocess.CalledProcessError:
-        raise NoDistributionFound(f"No distribution found called: {package}")
+@click.pass_context
+def setup(context):
+    context.obj.app.install_packages()
+    click.echo("Packages installed")
 
 
 @cli.group()
@@ -47,63 +28,54 @@ def make():
     pass
 
 
+@make.command("setup.py")
+@click.pass_context
+def setup_py(context):
+    click.echo(f"Making: {SETUP_PY}")
+    context.obj.app.make_template(SETUP_PY)
+    click.echo(f"Made: {SETUP_PY}")
+
+
 @make.command()
-@click.argument("project", required=False)
-@click.option("--force", "-f", required=False, default=False, is_flag=True)
-@click.option("--entry-points", nargs=2, required=False, default=("", ""))
-def installable(project, force, entry_points):
-    project_name = project if project else get_package()
-    click.echo("Building setup.py for: " + project_name)
-    command, func = entry_points
-    pip_installable = PipInstallable(
-        project_name, cli_command=command, cli_func=func
-    )
-    done = pip_installable.do(force=force)
-    message = (
-        "Built setup.py file"
-        if done
-        else "setup.py file already exists, use --force to overwrite"
-    )
-    click.echo(message)
+@click.pass_context
+def pre_commit(context):
+    click.echo(f"Making: {PRE_COMMIT}")
+    context.obj.app.make_template(PRE_COMMIT)
+    click.echo(f"Made: {PRE_COMMIT}")
+
+
+@make.command()
+@click.pass_context
+def license(context):
+    click.echo(f"Making: {LICENSE}")
+    context.obj.app.make_template(LICENSE)
+    click.echo(f"Made: {LICENSE}")
+
+
+@make.command()
+@click.pass_context
+def travis(context):
+    click.echo(f"Making: {TRAVIS}")
+    context.obj.app.make_template(TRAVIS)
+    click.echo(f"Made: {TRAVIS}")
+
+
+@make.command()
+@click.pass_context
+def gitignore(context):
+    click.echo(f"Making: {GITIGNORE}")
+    context.obj.app.make_template(GITIGNORE)
+    click.echo(f"Made: {GITIGNORE}")
 
 
 @make.command()
 @click.argument("name")
-@click.option("--force", "-f", required=False, default=False, is_flag=True)
-def package(name, force):
-    package_built = PackageBuilt(name)
-    done = package_built.do(force=force)
-    message = (
-        "Built {name}/__init__.py file"
-        if done
-        else f"{name}/__init__.py file already exists, "
-        "use --force to overwrite"
-    )
-    click.echo(message)
+@click.pass_context
+def package(context, name):
+    click.echo(f"Making: {name}")
+    context.obj.app.make_package(name)
+    click.echo(f"Made: {name}")
 
 
-@make.command()
-@click.option("--force", "-f", required=False, default=False, is_flag=True)
-def pre_commit(force):
-    package_built = PreCommitConfigBuilt()
-    done = package_built.do(force=force)
-    message = (
-        "Built .pre-commit-config.yaml file"
-        if done
-        else ".pre-commit-config.yaml file already exists, "
-        "use --force to overwrite"
-    )
-    click.echo(message)
-
-
-@make.command()
-@click.option("--force", "-f", required=False, default=False, is_flag=True)
-def travis(force):
-    package_built = TravisPyPiYAMLBuilt()
-    done = package_built.do(force=force)
-    message = (
-        "Built .travis.yaml file"
-        if done
-        else ".travis.yaml file already exists, use --force to overwrite"
-    )
-    click.echo(message)
+if __name__ == "__main__":
+    cli()

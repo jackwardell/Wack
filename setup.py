@@ -1,7 +1,8 @@
+from setuptools import find_packages
 from setuptools import setup
 
 # IN BETA
-__version__ = "0.1.5"
+__version__ = "0.2.0"
 
 with open("README.md", "r") as f:
     long_description = f.read()
@@ -11,9 +12,9 @@ setup(
     version=__version__,
     author="Jack Wardell",
     author_email="jack@wardell.xyz",
-    packages=["wack"],
-    package_dir={"wack": "wack"},
-    package_data={"wack": ["templates/*.jinja2"]},
+    packages=find_packages(),
+    # package_dir={"wack": "wack"},
+    # package_data={"wack": ["templates/*.jinja2"]},
     include_package_data=True,
     description="A simple CLI and automation tool",
     url="https://github.com/jackwardell/Wack",

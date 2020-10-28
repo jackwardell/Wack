@@ -1,3 +1,7 @@
 exclude _mothballed.py
 global-exclude test_*.py
 recursive-include *.jinja2
+include LICENSE
+include README.rst
+recursive-include wack/templates *
+recursive-exclude wack *.pyc
