@@ -13,8 +13,6 @@ setup(
     author="Jack Wardell",
     author_email="jack@wardell.xyz",
     packages=find_packages(),
-    # package_dir={"wack": "wack"},
-    # package_data={"wack": ["templates/*.jinja2"]},
     include_package_data=True,
     description="A simple CLI and automation tool",
     url="https://github.com/jackwardell/Wack",
