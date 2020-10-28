@@ -16,6 +16,7 @@ DESIRED_PACKAGES = [
     "sqlalchemy",
     "attrs",
     "requests",
+    "pre-commit",
 ]
 
 
@@ -31,24 +32,29 @@ class CommandFailure(Exception):
 
 @attr.s
 class Application:
-    def install_packages(self):
+    @staticmethod
+    def install_packages():
         for package in DESIRED_PACKAGES:
             try:
                 subprocess.check_call([sys.executable, "-m", "pip", "install", package])
             except subprocess.CalledProcessError as e:
                 raise CommandFailure(e)
 
-    def make_template(self, template_name, **kwargs):
+    @staticmethod
+    def make_template(template_name, **kwargs):
         template = get_template(template_name)
         with open(template_name, "w+") as f:
             f.write(template.render(**kwargs))
+        return template_name
 
-    def make_package(self, package_name):
+    @staticmethod
+    def make_package(package_name):
         os.mkdir(package_name)
         with open(package_name + "/__init__.py", "w+") as _:
             pass
 
-    def get_email_address(self):
+    @staticmethod
+    def get_email_address():
         try:
             email_address = subprocess.run(
                 ["git", "config", "--global", "user.email"],
