@@ -4,8 +4,9 @@ import sys
 from collections import namedtuple
 from pathlib import Path
 
-import attr
 import jinja2
+
+# import attr
 
 THIS_DIR = Path(os.path.dirname(os.path.realpath(__file__)))
 TEMPLATES_DIR = THIS_DIR / "templates"
@@ -64,7 +65,7 @@ def get_author():
         raise CommandFailure(e)
 
 
-@attr.s
+# @attr.s
 class Application:
     def make_template(self, template_name, force=False, **kwargs):
         if self.item_not_created(template_name) or force:
