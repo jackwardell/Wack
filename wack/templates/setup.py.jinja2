@@ -11,13 +11,13 @@ with open(str(ROOT_DIR / "README.md")) as readme:
     long_description = readme.read()
 
 setup(
-    name="{{ name }}",
+    name="{{ package_name }}",
     version=__version__,
     packages=find_packages(),
     include_package_data=True,
-    author="Jack Wardell",
-    author_email="jack@wardell.xyz",
-    url="http://github.com/jackwardell/",
+    author="{{ author }}",
+    author_email="{{ author_email }}",
+    url="{{ author_github }}",
     description="Enter something here",
     long_description=long_description,
     long_description_content_type="text/markdown",

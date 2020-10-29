@@ -1,4 +1,5 @@
 import click
+import setuptools
 
 from .app import Application
 
@@ -13,7 +14,7 @@ UPLOAD = "upload.sh"
 @click.group()
 @click.pass_context
 def cli(context):
-    context.ensure_object(type("context", (), {}))
+    context.ensure_object(type("Context", (), {}))
     context.obj.app = Application()
 
 
@@ -33,66 +34,100 @@ def make():
 
 @make.command("setup.py")
 @click.pass_context
-def setup_py(context):
+@click.option("--force", "-f", required=False, default=False, is_flag=True)
+def setup_py(context, force, file=SETUP_PY):
     """make a `setup.py` file to allow for `pip install -e .`"""
-    click.echo(f"Making: {SETUP_PY}")
-    context.obj.app.make_template(SETUP_PY)
-    click.echo(f"Made: {SETUP_PY}")
+    click.echo(f"Making: {file}")
+    author = context.obj.app.get_author()
+    packages = setuptools.find_packages()
+    package_name = packages.pop()
+    click.echo(f"Found: {packages}. Assuming: {package_name}")
+    click.echo(f"Assuming github is: {author.github}")
+    done = context.obj.app.make_template(
+        file,
+        package_name=package_name,
+        author=author.name,
+        author_email=author.email,
+        author_github=author.github,
+        force=force,
+    )
+    click.echo(
+        f"Made: {file}" if done else f"{file} already exists, use --force to overwrite"
+    )
 
 
 @make.command()
 @click.pass_context
-def pre_commit(context):
+@click.option("--force", "-f", required=False, default=False, is_flag=True)
+def pre_commit(context, force, file=PRE_COMMIT):
     """make a `.pre-commit-config.yaml` file to allow for pre-commit"""
-    click.echo(f"Making: {PRE_COMMIT}")
-    context.obj.app.make_template(PRE_COMMIT)
-    click.echo(f"Made: {PRE_COMMIT}")
+    click.echo(f"Making: {file}")
+    done = context.obj.app.make_template(file, force=force)
+    click.echo(
+        f"Made: {file}" if done else f"{file} already exists, use --force to overwrite"
+    )
 
 
 @make.command()
 @click.pass_context
-def license(context):
+@click.option("--force", "-f", required=False, default=False, is_flag=True)
+def license(context, force, file=LICENSE):
     """make a `LICENSE` file with MIT license"""
-    click.echo(f"Making: {LICENSE}")
-    context.obj.app.make_template(LICENSE)
-    click.echo(f"Made: {LICENSE}")
+    click.echo(f"Making: {file}")
+    author = context.obj.app.get_author()
+    done = context.obj.app.make_template(file, author=author.name, force=force)
+    click.echo(
+        f"Made: {file}" if done else f"{file} already exists, use --force to overwrite"
+    )
 
 
 @make.command()
 @click.pass_context
-def travis(context):
+@click.option("--force", "-f", required=False, default=False, is_flag=True)
+def travis(context, force, file=TRAVIS):
     """make a `.travis.yml` file for pypi auto publishing packages"""
-    click.echo(f"Making: {TRAVIS}")
-    context.obj.app.make_template(TRAVIS)
-    click.echo(f"Made: {TRAVIS}")
+    click.echo(f"Making: {file}")
+    done = context.obj.app.make_template(file, force=force)
+    click.echo(
+        f"Made: {file}" if done else f"{file} already exists, use --force to overwrite"
+    )
 
 
 @make.command()
 @click.pass_context
-def gitignore(context):
+@click.option("--force", "-f", required=False, default=False, is_flag=True)
+def gitignore(context, force, file=GITIGNORE):
     """make a `.gitignore` file with pycharm basics"""
-    click.echo(f"Making: {GITIGNORE}")
-    context.obj.app.make_template(GITIGNORE)
-    click.echo(f"Made: {GITIGNORE}")
+    click.echo(f"Making: {file}")
+    done = context.obj.app.make_template(file, force=force)
+    click.echo(
+        f"Made: {file}" if done else f"{file} already exists, use --force to overwrite"
+    )
 
 
 @make.command()
 @click.pass_context
-def upload(context):
+@click.option("--force", "-f", required=False, default=False, is_flag=True)
+def upload(context, force, file=UPLOAD):
     """make a `.gitignore` file with pycharm basics"""
-    click.echo(f"Making: {UPLOAD}")
-    context.obj.app.make_template(UPLOAD)
-    click.echo(f"Made: {UPLOAD}")
+    click.echo(f"Making: {file}")
+    done = context.obj.app.make_template(file, force=force)
+    click.echo(
+        f"Made: {file}" if done else f"{file} already exists, use --force to overwrite"
+    )
 
 
 @make.command()
 @click.argument("name")
 @click.pass_context
-def package(context, name):
+@click.option("--force", "-f", required=False, default=False, is_flag=True)
+def package(context, name, force):
     """make a `__init__.py` file in a package"""
     click.echo(f"Making: {name}")
-    context.obj.app.make_package(name)
-    click.echo(f"Made: {name}")
+    done = context.obj.app.make_package(name, force=force)
+    click.echo(
+        f"Made: {name}" if done else f"{name} already exists, use --force to overwrite"
+    )
 
 
 if __name__ == "__main__":

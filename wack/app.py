@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+from collections import namedtuple
 from pathlib import Path
 
 import attr
@@ -19,6 +20,12 @@ DESIRED_PACKAGES = [
     "pre-commit",
 ]
 
+author = namedtuple("Author", ["name", "email", "github"])
+
+
+class CommandFailure(Exception):
+    pass
+
 
 def get_template(template_name) -> jinja2.Template:
     template = str(TEMPLATES_DIR.resolve() / template_name) + ".jinja2"
@@ -26,40 +33,69 @@ def get_template(template_name) -> jinja2.Template:
         return jinja2.Template(f.read())
 
 
-class CommandFailure(Exception):
-    pass
+def install_package(package):
+    try:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+    except subprocess.CalledProcessError as e:
+        raise CommandFailure(e)
+
+
+def get_author():
+    try:
+        name = (
+            subprocess.run(
+                ["git", "config", "--global", "user.name"],
+                capture_output=True,
+            )
+            .stdout.decode()
+            .strip()
+        )
+        email_address = (
+            subprocess.run(
+                ["git", "config", "--global", "user.email"],
+                capture_output=True,
+            )
+            .stdout.decode()
+            .strip()
+        )
+        github = "https://github.com/" + name
+        return author(name, email_address, github)
+    except subprocess.CalledProcessError as e:
+        raise CommandFailure(e)
 
 
 @attr.s
 class Application:
+    def make_template(self, template_name, force=False, **kwargs):
+        if self.item_not_created(template_name) or force:
+            template = get_template(template_name)
+            with open(template_name, "w+") as f:
+                f.write(template.render(**kwargs))
+            return True
+        else:
+            return False
+
+    def make_package(self, package_name, force=False):
+        if self.item_not_created(package_name) or force:
+            os.mkdir(package_name)
+            with open(package_name + "/__init__.py", "w+") as _:
+                pass
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def item_not_created(item):
+        if item in os.listdir():
+            return False
+        else:
+            return True
+
+    @staticmethod
+    def get_author():
+        return get_author()
+
     @staticmethod
     def install_packages():
         for package in DESIRED_PACKAGES:
-            try:
-                subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-            except subprocess.CalledProcessError as e:
-                raise CommandFailure(e)
-
-    @staticmethod
-    def make_template(template_name, **kwargs):
-        template = get_template(template_name)
-        with open(template_name, "w+") as f:
-            f.write(template.render(**kwargs))
-        return template_name
-
-    @staticmethod
-    def make_package(package_name):
-        os.mkdir(package_name)
-        with open(package_name + "/__init__.py", "w+") as _:
-            pass
-
-    @staticmethod
-    def get_email_address():
-        try:
-            email_address = subprocess.run(
-                ["git", "config", "--global", "user.email"],
-                capture_output=True,
-            )
-            return email_address.stdout.decode().strip()
-        except subprocess.CalledProcessError as e:
-            raise CommandFailure(e)
+            install_package(package)
