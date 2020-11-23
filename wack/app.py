@@ -19,6 +19,7 @@ DESIRED_PACKAGES = [
     "attrs",
     "requests",
     "pre-commit",
+    "python-dotenv",
 ]
 
 author = namedtuple("Author", ["name", "email", "github"])

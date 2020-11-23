@@ -3,10 +3,7 @@
 ## Aim
 Wack is a personal project to provide a simple [click](https://github.com/pallets/click) (maybe [typer](https://github.com/tiangolo/typer) / or custom in the future) cli tool.
 
-Wack gives the user the ability to:
-* Make simple files quickly (e.g. setup.py)
-* Ability to write simple and quick cli commands, found when typing `$ wack` into the terminal
-* To automate simple tasks (e.g. making `pip install` write to requirements.txt by default)
+Wack gives the user the ability to make simple files quickly (e.g. setup.py)
 
 ## Install:
 ```
@@ -21,54 +18,32 @@ Options:
   --help  Show this message and exit.
 
 Commands:
-  init
   install
   make
 ```
 
-## Setup wack:
-```
-wack init
-```
+`wack install` will install my most used packages: Flask, IPython, pytest, sqlalchemy, attrs, requests, pre-commit, python-dotenv
 
-This will make a wack.py file in the directory you're in. My recommendation is to do this in the root dir. It will look like the below:
+`wack make` will give a list of files wack will make:
 ```
-from wack import command
-from wack import echo
+Usage: wack make [OPTIONS] COMMAND [ARGS]...
 
-
-@command()
-def hello_world():
-    echo("hello world")
-```
-
-Now when typing `$ wack` you will get:
-```
-Usage: wack [OPTIONS] COMMAND [ARGS]...
+  make files from templates
 
 Options:
   --help  Show this message and exit.
 
 Commands:
-  hello_world
-  init
-  install
-  make
+  gitignore   make a `.gitignore` file with pycharm basics
+  license     make a `LICENSE` file with MIT license
+  package     make a `__init__.py` file in a package
+  pre-commit  make a `.pre-commit-config.yaml` file to allow for pre-commit
+  setup.py    make a `setup.py` file to allow for `pip install -e .`
+  travis      make a `.travis.yml` file for pypi auto publishing packages
+  upload      make a `.gitignore` file with pycharm basics
+
 ```
 
-
-Make features:
-* .pre-commit-config.yaml
-* .travis.yml (for pypi)
-* setup.py
-* wack.py
-
-FYI, as of 0.1.4 (current version), click groups aren't supported, only commands, which need to be imported from `wack`. All other click features should work by default and can be imported from click or wack (as wack impliments `from click import *`).
-
-## TODO
-* have a `make` command for:
-    * dotenv
-    * pre-commit
-* more tests
+#### TODO
 * cookie-cutter for simple flask app?
 * sqlalchemy / alembic setup
